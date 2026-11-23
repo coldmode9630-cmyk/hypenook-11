@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /checkout.html
+Disallow: /order.html
+Disallow: /api/
+Sitemap: https://www.hypenook.shop/sitemap.xml

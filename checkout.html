@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Checkout — HypeNook</title>
+<meta name="description" content="Secure checkout for HypeNook. Cash on Delivery or online payment with Rs. 150 off. Delivery all over Pakistan.">
+<meta name="theme-color" content="#103430">
+<meta property="og:site_name" content="HypeNook">
+<meta property="og:title" content="Checkout — HypeNook">
+<meta property="og:description" content="Secure checkout for HypeNook. Cash on Delivery or online payment with Rs. 150 off. Delivery all over Pakistan.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/img/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+<meta name="robots" content="noindex">
+</head>
+<body data-page="checkout">
+
+<main id="main">
+  <header class="page-head" style="padding-bottom:30px"><div class="page-head__bg"></div>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span>/</span><a href="shop.html">Shop</a><span>/</span><span>Checkout</span></nav>
+    <h1 class="display" style="font-size:clamp(46px,8vw,120px)" data-split data-hero>Checkout</h1>
+  </header>
+  <div class="wrap">
+    <div class="checkout" id="checkoutWrap">
+      <form id="checkoutForm" novalidate>
+        <fieldset class="fieldset"><legend><span>1</span>Contact</legend>
+          <div class="field " data-field="name"><label for="f_name">Full name</label><input class="input" id="f_name" name="name" type="text" autocomplete="name" required maxlength="80" aria-describedby="e_name"><p class="field-error" id="e_name"></p></div>
+          <div class="grid-2"><div class="field " data-field="phone"><label for="f_phone">Phone number</label><input class="input" id="f_phone" name="phone" type="tel" autocomplete="tel" required inputmode="tel" placeholder="03XX XXXXXXX" maxlength="16" aria-describedby="e_phone"><p class="field-error" id="e_phone"></p></div><div class="field " data-field="email"><label for="f_email">Email <em>(optional)</em></label><input class="input" id="f_email" name="email" type="email" autocomplete="email"  maxlength="120" aria-describedby="e_email"><p class="field-error" id="e_email"></p></div></div>
+        </fieldset>
+        <fieldset class="fieldset"><legend><span>2</span>Delivery address</legend>
+          <div class="field" data-field="address"><label for="f_address">Complete address</label><textarea class="input" id="f_address" name="address" autocomplete="street-address" required maxlength="300" placeholder="House / street / area / landmark" aria-describedby="e_address"></textarea><p class="field-error" id="e_address"></p></div>
+          <div class="grid-2"><div class="field " data-field="city"><label for="f_city">City</label><input class="input" id="f_city" name="city" type="text" autocomplete="address-level2" required maxlength="60" aria-describedby="e_city"><p class="field-error" id="e_city"></p></div>
+            <div class="field" data-field="province"><label for="f_province">Province</label><select class="input" id="f_province" name="province" autocomplete="address-level1" required aria-describedby="e_province"><option value="">Select province</option><option>Punjab</option><option>Sindh</option><option>Khyber Pakhtunkhwa</option><option>Balochistan</option><option>Islamabad Capital Territory</option><option>Gilgit-Baltistan</option><option>Azad Jammu & Kashmir</option></select><p class="field-error" id="e_province"></p></div></div>
+          <div class="field " data-field="postalCode"><label for="f_postalCode">Postal code <em>(optional)</em></label><input class="input" id="f_postalCode" name="postalCode" type="text" autocomplete="postal-code"  inputmode="numeric" maxlength="5" aria-describedby="e_postalCode"><p class="field-error" id="e_postalCode"></p></div>
+          <div class="field"><label for="f_notes">Order notes <em>(optional)</em></label><textarea class="input" id="f_notes" name="notes" maxlength="300" style="min-height:70px"></textarea></div>
+          <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Leave this empty<input name="company" tabindex="-1" autocomplete="off"></label></div>
+        </fieldset>
+        <fieldset class="fieldset"><legend><span>3</span>Your items &amp; sizes</legend>
+          <div id="itemsEditor"></div>
+        </fieldset>
+        <fieldset class="fieldset"><legend><span>4</span>Payment method</legend>
+          <div class="pay-options">
+            <label class="pay"><input type="radio" name="paymentMethod" value="cod" checked><span class="pay__dot"></span><span><span class="pay__title">Cash on Delivery</span><br><span class="pay__desc">Pay in cash when your order arrives.</span></span><span></span></label>
+            <label class="pay"><input type="radio" name="paymentMethod" value="online"><span class="pay__dot"></span><span><span class="pay__title">Online payment — bank transfer</span><br><span class="pay__desc">Transfer from any banking app, JazzCash or Easypaisa to our Faysal Bank account.</span></span><span class="pay__tag">Rs. 150 off</span></label>
+          </div>
+          <div id="payNotice"></div>
+        </fieldset>
+      </form>
+      <aside class="checkout__summary" aria-labelledby="sumTitle">
+        <h2 class="eyebrow" id="sumTitle" style="margin:0 0 10px">Order summary</h2>
+        <div id="sumLines"></div>
+        <div class="drawer__promo" style="margin:20px 0">Get Rs. 150 off on online payments</div>
+        <div id="sumTotals" aria-live="polite"></div>
+        <button class="btn btn--block" type="submit" form="checkoutForm" id="placeBtn" style="margin-top:22px"><span class="btn__label">Place order</span></button>
+        <p class="form-error" id="formError" role="alert"></p>
+        <a class="btn btn--ghost btn--block" id="waOrder" target="_blank" rel="noopener" href="#" style="margin-top:8px"><span class="btn__label">Or order via WhatsApp</span></a>
+        <p class="secure"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Prices are re-checked on our server before your order is placed.</p>
+      </aside>
+    </div>
+  </div>
+</main>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/site.js"></script>
+<script src="assets/js/checkout.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shop — HypeNook</title>
+<meta name="description" content="Shop HypeNook streetwear: the NOIR Graphic Oversized Hoodie, Rs. 2,750. Sizes S–XL. Delivery all over Pakistan.">
+<meta name="theme-color" content="#103430">
+<meta property="og:site_name" content="HypeNook">
+<meta property="og:title" content="Shop — HypeNook">
+<meta property="og:description" content="Shop HypeNook streetwear: the NOIR Graphic Oversized Hoodie, Rs. 2,750. Sizes S–XL. Delivery all over Pakistan.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/img/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="shop">
+
+<main id="main">
+  <header class="page-head"><div class="page-head__bg"></div>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a><span>/</span><span id="crumbHere">Shop</span></nav>
+    <h1 class="display" id="shopTitle" data-split data-hero>Shop</h1>
+    <p class="lede" data-reveal data-hero data-delay="0.3" id="shopLede" style="margin-top:22px">Clean. Comfortable. Wearable fashion — delivered all over Pakistan.</p>
+  </header>
+  <section class="wrap" style="padding-bottom:clamp(80px,10vw,140px)">
+    <div class="filters">
+      <div class="chips" role="group" aria-label="Filter products">
+        <a class="chip" href="shop.html" id="chipAll" style="display:inline-grid;place-items:center">All</a>
+        <a class="chip" href="shop.html?filter=new" id="chipNew" style="display:inline-grid;place-items:center">New arrivals</a>
+      </div>
+      <p style="margin:0;color:var(--muted);font-size:13px" id="shopCount" aria-live="polite"></p>
+    </div>
+    <div class="products" id="productGrid"></div>
+  </section>
+</main>
+<script src="assets/js/store.js"></script>
+<script src="assets/js/site.js"></script>
+<script src="assets/js/shop.js"></script>
+</body>
+</html>

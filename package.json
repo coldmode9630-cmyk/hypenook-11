@@ -1,0 +1,14 @@
+{
+  "name": "hypenook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HypeNook — premium streetwear e-commerce site (static front end + serverless API).",
+  "scripts": {
+    "dev": "node scripts/dev-server.js",
+    "start": "node scripts/dev-server.js",
+    "test": "node tests/pricing.test.js && node tests/deploy.test.js"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

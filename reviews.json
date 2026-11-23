@@ -1,0 +1,4 @@
+{
+  "_readme": "Only add REAL reviews from real customers (with their permission). See README → Reviews. New submissions arrive at your ORDER_WEBHOOK_URL as event review.submitted; copy the ones you approve into this list.",
+  "reviews": []
+}
