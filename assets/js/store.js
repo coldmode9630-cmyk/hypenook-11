@@ -65,10 +65,9 @@
       // Leave empty and the guide asks customers to message you for exact sizing.
       sizeChart: null, // e.g. { S: { chest: 0, length: 0, sleeve: 0 }, ... }
       images: [
-        { key: 'noir-front-2', alt: 'Female model wearing the NOIR hoodie, front view with chest wordmark' },
-        { key: 'noir-back-female', alt: 'Female model showing the NOIR angel back graphic' },
-        { key: 'noir-back-male', alt: 'Male model showing the NOIR angel back graphic' },
-        { key: 'noir-duo', alt: 'Male and female models wearing the NOIR hoodie, back view' }
+        { key: 'product1', alt: 'Two models in the NOIR hoodie: front chest wordmark and the angel-and-moon back graphic' },
+        { key: 'product2', alt: 'Female model leaning on a desk in the NOIR hoodie, front view with chest wordmark' },
+        { key: 'product3', alt: 'Female model on a vintage phone wearing the NOIR hoodie, front view' }
       ]
     }
   ];

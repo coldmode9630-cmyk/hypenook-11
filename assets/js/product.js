@@ -22,7 +22,7 @@
         return '<button type="button" role="tab" aria-label="Image ' + (i + 1) + ': ' + H.esc(im.alt) + '" aria-current="' + (i === 0) + '" data-i="' + i + '"><img src="' + H.img(im.key, true) + '" alt="" width="84" height="92" loading="lazy"></button>';
       }).join('') + '</div>' +
       '<div class="stage" id="stage" tabindex="0" aria-label="Product image. Click or press Enter to zoom; use arrow keys to change image." role="img">' +
-        '<img class="stage__img is-current" src="' + H.img(p.images[0].key) + '" alt="' + H.esc(p.images[0].alt) + '" width="1199" height="1312" fetchpriority="high">' +
+        '<img class="stage__img is-current" src="' + H.img(p.images[0].key) + '" alt="' + H.esc(p.images[0].alt) + '" width="1200" height="1490" fetchpriority="high">' +
         '<span class="stage__index" id="stageIndex">01 / 0' + p.images.length + '</span>' +
         '<span class="stage__hint">Click to zoom</span>' +
         '<div class="stage__nav"><button type="button" id="prevImg" aria-label="Previous image"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5l-7 7 7 7"/></svg></button><button type="button" id="nextImg" aria-label="Next image"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5l7 7-7 7"/></svg></button></div>' +
@@ -84,7 +84,7 @@
     H.$$('.thumbs button').forEach(function (b, j) { b.setAttribute('aria-current', String(j === i)); });
     H.$('#stageIndex').textContent = '0' + (i + 1) + ' / 0' + p.images.length;
     var old = H.$('.stage__img.is-current', stage);
-    var n = H.el('img', { class: 'stage__img', src: H.img(p.images[i].key), alt: p.images[i].alt, width: 1199, height: 1312 });
+    var n = H.el('img', { class: 'stage__img', src: H.img(p.images[i].key), alt: p.images[i].alt, width: 1200, height: 1490 });
     if (H.reduceMotion) { old.replaceWith(n); n.classList.add('is-current'); return; }
     busy = true;
     n.style.clipPath = dir > 0 ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)';
@@ -196,8 +196,8 @@
   else H.$('#reviews').remove();
 
   /* ---- lookbook ---- */
-  var lk = [p.images[3], p.images[1], p.images[2]];
+  var lk = [p.images[0], p.images[1], p.images[2]];
   H.$('#lookbook').innerHTML = lk.map(function (im, i) {
-    return '<div class="tile ' + ['tile--a', 'tile--b', 'tile--c'][i] + ' mask"><img src="' + H.img(im.key) + '" alt="' + H.esc(im.alt) + '" loading="lazy" width="1199" height="1312"' + (i === 0 ? ' style="object-position:30% 50%"' : '') + '></div>';
+    return '<div class="tile ' + ['tile--a', 'tile--b', 'tile--c'][i] + ' mask"><img src="' + H.img(im.key) + '" alt="' + H.esc(im.alt) + '" loading="lazy" decoding="async" width="1200" height="1490"' + (i === 0 ? ' style="object-position:50% 35%"' : '') + '></div>';
   }).join('');
 })();

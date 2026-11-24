@@ -478,8 +478,8 @@
     return '<article class="card" data-reveal data-delay="' + (0.08 * (i || 0)) + '">' +
       '<a class="card__media" href="product.html?id=' + p.id + '" aria-label="' + esc(p.name) + ' — ' + S.formatPKR(p.price) + '">' +
         (p.isNew ? '<span class="card__badge">New drop</span>' : '') +
-        '<img src="' + img(p.images[0].key, true) + '" alt="' + esc(p.images[0].alt) + '" width="800" height="875" loading="lazy">' +
-        '<img class="alt" src="' + img(p.images[2].key, true) + '" alt="" width="800" height="875" loading="lazy" aria-hidden="true">' +
+        '<img src="' + img(p.images[0].key, true) + '" alt="' + esc(p.images[0].alt) + '" width="800" height="993" loading="lazy" decoding="async">' +
+        '<img class="alt" src="' + img(p.images[2].key, true) + '" alt="" width="800" height="993" loading="lazy" decoding="async" aria-hidden="true">' +
       '</a>' +
       '<div class="card__quick" role="group" aria-label="Quick add ' + esc(p.shortName) + '">' +
         p.sizes.map(function (s) { return '<button type="button" data-quick="' + p.id + '" data-size="' + s + '" aria-label="Add size ' + s + ' to bag">' + s + '</button>'; }).join('') +
