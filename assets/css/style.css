@@ -437,18 +437,6 @@ input, select, textarea { font: inherit; color: inherit; }
   .stats { grid-template-columns: 1fr; }
 }
 
-/* ---------- Instagram ---------- */
-.insta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.insta-grid a { position: relative; aspect-ratio: 1; overflow: hidden; background: var(--ink-3); }
-.insta-grid img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.2s var(--ease), filter .6s; filter: grayscale(.4); }
-.insta-grid a::after {
-  content: ''; position: absolute; inset: 0; background: rgba(16,52,48,.6); opacity: 0; transition: opacity .5s;
-}
-.insta-grid a:hover img { transform: scale(1.07); filter: none; }
-.insta-grid a:hover::after { opacity: 1; }
-.insta-grid svg { position: absolute; z-index: 2; left: 50%; top: 50%; width: 30px; height: 30px; transform: translate(-50%, -50%) scale(.6); opacity: 0; transition: .5s var(--ease); }
-.insta-grid a:hover svg { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-@media (max-width: 700px) { .insta-grid { grid-template-columns: repeat(2, 1fr); } }
 
 /* ---------- Footer ---------- */
 .footer { border-top: 0; padding: clamp(60px, 8vw, 110px) var(--pad) 28px; position: relative; overflow: hidden; }
