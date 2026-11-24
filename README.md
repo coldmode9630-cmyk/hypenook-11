@@ -13,10 +13,14 @@ assets/js/home.js | shop.js | product.js | checkout.js | order.js | reviews.js
 assets/data/reviews.json    approved customer reviews (starts empty)
 assets/img/                 your product photos (WebP + JPG fallback, plus og-image.jpg)
 api/order.js                POST: validates, re-prices from the catalog, saves the order
-api/review.js               POST: receives a customer review for you to approve
+api/review.js               POST: saves a customer review as "pending" (Supabase)
+api/reviews.js              GET: approved reviews only (public)
+api/admin/reviews.js        GET/POST: list, approve, delete reviews (needs ADMIN_PASSWORD)
+admin.html                  password-protected review moderation page
+supabase/reviews.sql        SQL that creates the reviews table (RLS on)
 api/payment/status.js       GET: is online payment configured?
 api/payment/webhook.js      POST: verified payment notifications from the gateway
-lib/                        server helpers (http, order storage, payment adapter)
+lib/                        server helpers (http, order storage, Supabase, payment adapter)
 scripts/dev-server.js       local dev server (NOT used on Vercel)
 .vercelignore               keeps local-only files out of the Vercel deployment
 tests/pricing.test.js       pricing + validation tests
@@ -121,9 +125,21 @@ The site shows **only reviews you approve**. Nothing is published automatically,
   product name) and a home-page "Their stories" section below "Follow the hype". The home section shows the latest 3 reviews.
   Until the first review is approved, both say "No reviews yet" and offer a **Write a review** button.
 - **How customers send one:** the **Write a review** button opens a form (stars, name, city, headline, review, size, order number).
-  - With `ORDER_WEBHOOK_URL` set, it arrives at your webhook as `{ "event": "review.submitted", "data": { …, "status": "pending" } }`.
-  - Without it, the customer is asked to send the review to you on WhatsApp.
-- **Approving one:** add it to `assets/data/reviews.json` and redeploy:
+  - With Supabase set up (below), it is saved in the `reviews` table as `pending`.
+  - Without Supabase but with `ORDER_WEBHOOK_URL`, it arrives at your webhook as `{ "event": "review.submitted", "data": { …, "status": "pending" } }`.
+  - With neither, the customer is asked to send the review to you on WhatsApp.
+- **Approving one (Supabase):** open `https://your-site/admin.html`, log in with `ADMIN_PASSWORD`, and click **Approve** or
+  **Delete**. Approved reviews show on the site within about a minute.
+- **Spam protection:** hidden honeypot field, required fields with length limits (name 2–60, review 10–1000 characters),
+  links are rejected, duplicate reviews are ignored, and each visitor can send at most 3 reviews per day.
+
+### Supabase setup
+1. Supabase → **SQL Editor** → paste `supabase/reviews.sql` → **Run**. This creates the table with Row Level Security on
+   and no public access. Only the site's server functions can read or write it.
+2. Set `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (the secret key, never the public anon key) and `ADMIN_PASSWORD`
+   as server environment variables (Vercel → Settings → Environment Variables), then redeploy.
+
+- **Approving one by hand (no Supabase):** add it to `assets/data/reviews.json` and redeploy. These are shown alongside Supabase reviews:
 
 ```json
 {

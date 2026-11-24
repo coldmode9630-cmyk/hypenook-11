@@ -2,4 +2,5 @@ User-agent: *
 Disallow: /checkout.html
 Disallow: /order.html
 Disallow: /api/
+Disallow: /admin.html
 Sitemap: https://www.hypenook.shop/sitemap.xml

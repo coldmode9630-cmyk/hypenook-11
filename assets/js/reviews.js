@@ -1,6 +1,6 @@
 /*!
  * HypeNook — customer reviews
- * Shows ONLY real, approved reviews from assets/data/reviews.json.
+ * Shows ONLY real, approved reviews (Supabase via /api/reviews, plus assets/data/reviews.json).
  * New reviews go to the shop owner for checking first (POST /api/review,
  * or WhatsApp if the server isn't available). Nothing is auto-published.
  */
@@ -10,16 +10,22 @@
   var STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 6 6.6.8-4.9 4.6 1.3 6.5L12 17.3l-5.9 3.2 1.3-6.5L2.5 9.4l6.6-.8z"/></svg>';
   var cache = null;
 
+  // Approved reviews come from the database (GET /api/reviews); any reviews you
+  // added by hand to assets/data/reviews.json are shown as well.
+  function getList(url) {
+    return fetch(url, { cache: 'no-cache', headers: { Accept: 'application/json' } })
+      .then(function (r) { return r.ok && /json/.test(r.headers.get('content-type') || '') ? r.json() : { reviews: [] }; })
+      .then(function (d) { return d && Array.isArray(d.reviews) ? d.reviews : []; })
+      .catch(function () { return []; });
+  }
   function load() {
     if (cache) return cache;
-    cache = fetch('assets/data/reviews.json', { cache: 'no-cache' })
-      .then(function (r) { return r.ok ? r.json() : { reviews: [] }; })
-      .then(function (d) {
-        return (d && Array.isArray(d.reviews) ? d.reviews : []).filter(function (r) {
+    cache = Promise.all([getList('api/reviews'), getList('assets/data/reviews.json')])
+      .then(function (lists) {
+        return lists[0].concat(lists[1]).filter(function (r) {
           return r && r.name && r.text && r.rating >= 1 && r.rating <= 5;
         }).sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
-      })
-      .catch(function () { return []; });
+      });
     return cache;
   }
   function forProduct(list, id) { return list.filter(function (r) { return !r.productId || r.productId === id; }); }

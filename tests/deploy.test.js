@@ -68,7 +68,7 @@ var routes = {};
 serverFiles.filter(function (f) { return f.indexOf(path.join(ROOT, 'api')) === 0; }).forEach(function (f) {
   var mod = require(f);
   assert.strictEqual(typeof mod, 'function', path.relative(ROOT, f) + ' must export a handler');
-  routes['/' + path.relative(ROOT, f).replace(/\.js$/, '')] = mod;
+  routes['/' + path.relative(ROOT, f).split(path.sep).join('/').replace(/\.js$/, '')] = mod;
 });
 assert.strictEqual(typeof global.window, 'undefined');
 ok(Object.keys(routes).length + ' API functions load in plain Node: ' + Object.keys(routes).join(', '));
@@ -91,7 +91,11 @@ var server = http.createServer(function (req, res) {
     r = await post('/api/review', { productId: 'noir-graphic-oversized-hoodie', rating: 5, name: 'Test', text: 'Testing the review endpoint.' });
     assert.strictEqual(r.status, 200);
     r = await post('/api/payment/webhook', {}); assert.strictEqual(r.status, 401);
-    ok('API handlers respond correctly (COD Rs. 3,049 · online Rs. 2,899 · review · webhook signature check)');
+    r = await fetch(base + '/api/reviews'); d = await r.json(); assert.strictEqual(r.status, 200); assert.ok(Array.isArray(d.reviews));
+    r = await fetch(base + '/api/admin/reviews', { headers: { Authorization: 'Bearer wrong' } }); assert.ok(r.status === 401 || r.status === 503, 'admin must reject, got ' + r.status);
+    r = await post('/api/review', { productId: 'noir-graphic-oversized-hoodie', rating: 5, name: 'Spam', text: 'Great deals at www.spam-site.com now' }); assert.strictEqual(r.status, 422);
+    r = await post('/api/review', { productId: 'noir-graphic-oversized-hoodie', rating: 5, name: 'Test', text: 'x'.repeat(1001) }); assert.strictEqual(r.status, 422);
+    ok('API handlers respond correctly (COD Rs. 3,049 · online Rs. 2,899 · review + spam checks · approved reviews · admin auth · webhook signature check)');
     console.log('deploy tests passed ✓');
   } catch (e) { console.error(e); process.exitCode = 1; }
   server.close();

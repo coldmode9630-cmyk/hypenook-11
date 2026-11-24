@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Reviews admin · HypeNook</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<style>
+  :root { --green:#103430; --ink:#f5f4f0; --card:#fff; --line:rgba(16,52,48,.16); --muted:rgba(16,52,48,.64); --danger:#b3412b; --ok:#1d7a5f; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--ink); color:var(--green); font:15px/1.5 'Inter','Helvetica Neue',Arial,sans-serif; }
+  .wrap { max-width:880px; margin:0 auto; padding:32px 20px 80px; }
+  header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:28px; }
+  header img { height:32px; }
+  h1 { font:800 28px/1.1 'Archivo','Helvetica Neue',Arial,sans-serif; text-transform:uppercase; letter-spacing:-.01em; margin:0; }
+  .btn { appearance:none; border:1px solid var(--green); background:var(--green); color:var(--ink); padding:10px 18px; font:600 12px/1 inherit; letter-spacing:.12em; text-transform:uppercase; cursor:pointer; }
+  .btn--ghost { background:transparent; color:var(--green); border-color:var(--line); }
+  .btn--danger { background:transparent; color:var(--danger); border-color:var(--danger); }
+  .btn:disabled { opacity:.5; cursor:wait; }
+  .input { width:100%; padding:12px 14px; border:1px solid var(--line); background:#fff; font:inherit; color:inherit; }
+  .login { max-width:380px; margin:12vh auto 0; background:var(--card); border:1px solid var(--line); padding:28px; display:grid; gap:14px; }
+  .tabs { display:flex; gap:8px; margin-bottom:18px; }
+  .tabs button[aria-pressed="true"] { background:var(--green); color:var(--ink); border-color:var(--green); }
+  .item { background:var(--card); border:1px solid var(--line); padding:20px; margin-bottom:12px; display:grid; gap:8px; }
+  .meta { color:var(--muted); font-size:13px; }
+  .stars { color:#c9a227; letter-spacing:2px; }
+  .title { font-weight:700; }
+  .text { white-space:pre-wrap; margin:0; }
+  .actions { display:flex; gap:8px; margin-top:6px; }
+  .msg { min-height:1.4em; font-size:14px; }
+  .msg.err { color:var(--danger); } .msg.ok { color:var(--ok); }
+  .empty { color:var(--muted); padding:40px 0; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><a href="index.html"><img src="assets/img/logo-wordmark.svg" alt="HypeNook"></a><button class="btn btn--ghost" id="logout" hidden>Log out</button></header>
+
+  <form class="login" id="login" autocomplete="on">
+    <h1>Reviews admin</h1>
+    <label for="pw">Admin password</label>
+    <input class="input" id="pw" type="password" autocomplete="current-password" required>
+    <button class="btn" type="submit">Log in</button>
+    <p class="msg err" id="loginMsg" role="alert"></p>
+  </form>
+
+  <main id="panel" hidden>
+    <h1 style="margin-bottom:18px">Reviews</h1>
+    <div class="tabs">
+      <button class="btn btn--ghost" data-status="pending" aria-pressed="true">Pending</button>
+      <button class="btn btn--ghost" data-status="approved" aria-pressed="false">Approved</button>
+      <button class="btn btn--ghost" id="refresh" style="margin-left:auto">Refresh</button>
+    </div>
+    <p class="msg" id="msg" role="status"></p>
+    <div id="list"></div>
+  </main>
+</div>
+<script>
+(function () {
+  'use strict';
+  var KEY = 'hn_admin_pw', status = 'pending';
+  var $ = function (s) { return document.querySelector(s); };
+  function pw() { return sessionStorage.getItem(KEY) || ''; }
+  function api(method, body, qs) {
+    return fetch('api/admin/reviews' + (qs || ''), {
+      method: method, cache: 'no-store',
+      headers: { Authorization: 'Bearer ' + pw(), 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: body ? JSON.stringify(body) : undefined
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) {
+        if (r.status === 401) { logout('Wrong password.'); throw new Error('Wrong password.'); }
+        if (!r.ok || !d.ok) throw new Error(d.message || ('Request failed (' + r.status + ')'));
+        return d;
+      });
+    });
+  }
+  function msg(t, cls) { var m = $('#msg'); m.textContent = t || ''; m.className = 'msg ' + (cls || ''); }
+  function el(tag, cls, text) { var n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
+  function fmt(d) { var x = new Date(d); return isNaN(x) ? '' : x.toLocaleString('en-PK', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+
+  function render(rows) {
+    var list = $('#list'); list.innerHTML = '';
+    if (!rows.length) { list.appendChild(el('p', 'empty', status === 'pending' ? 'No pending reviews.' : 'No approved reviews yet.')); return; }
+    rows.forEach(function (r) {
+      var it = el('article', 'item');
+      it.appendChild(el('div', 'stars', '★★★★★'.slice(0, r.rating) + '☆☆☆☆☆'.slice(0, 5 - r.rating) + '  ' + r.rating + '/5'));
+      if (r.title) it.appendChild(el('div', 'title', r.title));
+      it.appendChild(el('p', 'text', r.text));
+      var bits = [r.name, r.city, r.size ? 'Size ' + r.size : '', r.order_number ? 'Order ' + r.order_number : '', fmt(r.created_at), r.product_id].filter(Boolean);
+      it.appendChild(el('div', 'meta', bits.join(' · ')));
+      var act = el('div', 'actions');
+      if (r.status === 'pending') {
+        var ok = el('button', 'btn', 'Approve'); ok.type = 'button';
+        ok.onclick = function () { act_(ok, 'approve', r.id, 'Approved — it will show on the site within a minute.'); };
+        act.appendChild(ok);
+      }
+      var del = el('button', 'btn btn--danger', 'Delete'); del.type = 'button';
+      del.onclick = function () { if (confirm('Delete this review permanently?')) act_(del, 'delete', r.id, 'Deleted.'); };
+      act.appendChild(del);
+      it.appendChild(act);
+      list.appendChild(it);
+    });
+  }
+  function act_(btn, action, id, done) {
+    btn.disabled = true;
+    api('POST', { action: action, id: id }).then(function () { msg(done, 'ok'); load(); })
+      .catch(function (e) { btn.disabled = false; msg(e.message, 'err'); });
+  }
+  function load() {
+    $('#list').setAttribute('aria-busy', 'true');
+    return api('GET', null, '?status=' + status).then(function (d) { render(d.reviews); })
+      .catch(function (e) { msg(e.message, 'err'); })
+      .then(function () { $('#list').removeAttribute('aria-busy'); });
+  }
+  function show(loggedIn) { $('#login').hidden = loggedIn; $('#panel').hidden = !loggedIn; $('#logout').hidden = !loggedIn; }
+  function logout(why) { sessionStorage.removeItem(KEY); show(false); $('#loginMsg').textContent = why || ''; }
+
+  $('#login').addEventListener('submit', function (e) {
+    e.preventDefault();
+    sessionStorage.setItem(KEY, $('#pw').value);
+    $('#loginMsg').textContent = '';
+    api('GET', null, '?status=pending').then(function (d) { show(true); $('#pw').value = ''; msg(''); render(d.reviews); })
+      .catch(function (err) { if (pw()) { sessionStorage.removeItem(KEY); $('#loginMsg').textContent = err.message; } });
+  });
+  $('#logout').onclick = function () { logout(''); };
+  $('#refresh').onclick = function () { msg(''); load(); };
+  document.querySelectorAll('[data-status]').forEach(function (b) {
+    b.onclick = function () {
+      status = b.getAttribute('data-status');
+      document.querySelectorAll('[data-status]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      msg(''); load();
+    };
+  });
+  if (pw()) { show(true); load(); }
+})();
+</script>
+</body>
+</html>

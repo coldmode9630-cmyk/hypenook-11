@@ -28,6 +28,8 @@ var ROOT = path.resolve(__dirname, '..');
 var ROUTES = {
   '/api/order': require('../api/order.js'),
   '/api/review': require('../api/review.js'),
+  '/api/reviews': require('../api/reviews.js'),
+  '/api/admin/reviews': require('../api/admin/reviews.js'),
   '/api/payment/status': require('../api/payment/status.js'),
   '/api/payment/webhook': require('../api/payment/webhook.js')
 };
