@@ -345,7 +345,6 @@ input, select, textarea { font: inherit; color: inherit; }
   background: linear-gradient(transparent, rgba(16,52,48,.85)); color: var(--paper);
   font-family: var(--f-display); font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase;
 }
-.tile__cap .serif { font-size: 18px; letter-spacing: 0; }
 @media (max-width: 560px) {
   .editorial { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tile--a { grid-column: 1 / -1; }
