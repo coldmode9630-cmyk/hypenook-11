@@ -28,6 +28,9 @@
   .title { font-weight:700; }
   .text { white-space:pre-wrap; margin:0; }
   .actions { display:flex; gap:8px; margin-top:6px; }
+  .photos { display:flex; gap:8px; flex-wrap:wrap; }
+  .photos a { display:block; width:120px; height:120px; border:1px solid var(--line); background:var(--ink); }
+  .photos img { width:100%; height:100%; object-fit:cover; display:block; }
   .msg { min-height:1.4em; font-size:14px; }
   .msg.err { color:var(--danger); } .msg.ok { color:var(--ok); }
   .empty { color:var(--muted); padding:40px 0; text-align:center; }
@@ -87,6 +90,18 @@
       it.appendChild(el('div', 'stars', '★★★★★'.slice(0, r.rating) + '☆☆☆☆☆'.slice(0, 5 - r.rating) + '  ' + r.rating + '/5'));
       if (r.title) it.appendChild(el('div', 'title', r.title));
       it.appendChild(el('p', 'text', r.text));
+      if (r.photoUrls && r.photoUrls.length) {
+        var ph = el('div', 'photos');
+        r.photoUrls.forEach(function (u, i) {
+          if (!/^https?:\/\//.test(u)) return;
+          var a = el('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Open photo ' + (i + 1) + ' full size';
+          var im = el('img'); im.src = u; im.alt = 'Customer photo ' + (i + 1); im.loading = 'lazy';
+          a.appendChild(im); ph.appendChild(a);
+        });
+        it.appendChild(ph);
+      } else if (r.photos && r.photos.length) {
+        it.appendChild(el('div', 'meta', r.photos.length + ' photo(s) attached, but they could not be loaded.'));
+      }
       var bits = [r.name, r.city, r.size ? 'Size ' + r.size : '', r.order_number ? 'Order ' + r.order_number : '', fmt(r.created_at), r.product_id].filter(Boolean);
       it.appendChild(el('div', 'meta', bits.join(' · ')));
       var act = el('div', 'actions');
@@ -96,7 +111,7 @@
         act.appendChild(ok);
       }
       var del = el('button', 'btn btn--danger', 'Delete'); del.type = 'button';
-      del.onclick = function () { if (confirm('Delete this review permanently?')) act_(del, 'delete', r.id, 'Deleted.'); };
+      del.onclick = function () { if (confirm('Delete this review and its photos permanently?')) act_(del, 'delete', r.id, 'Deleted.'); };
       act.appendChild(del);
       it.appendChild(act);
       list.appendChild(it);

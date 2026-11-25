@@ -130,6 +130,10 @@ The site shows **only reviews you approve**. Nothing is published automatically,
   - With neither, the customer is asked to send the review to you on WhatsApp.
 - **Approving one (Supabase):** open `https://your-site/admin.html`, log in with `ADMIN_PASSWORD`, and click **Approve** or
   **Delete**. Approved reviews show on the site within about a minute.
+- **Photos:** customers can add up to 3 photos (JPG/PNG/WEBP, max 5 MB). The browser shrinks them to max 1600px WEBP,
+  then uploads them straight to the private Supabase Storage bucket `review-photos` using one-time signed URLs that the
+  server only issues for a valid review. You see them on `/admin.html`; the site only shows photos of approved reviews.
+  Deleting a review also deletes its photos.
 - **Spam protection:** hidden honeypot field, required fields with length limits (name 2–60, review 10–1000 characters),
   links are rejected, duplicate reviews are ignored, and each visitor can send at most 3 reviews per day.
 

@@ -27,3 +27,30 @@ create index if not exists reviews_ip_hash_created_idx on public.reviews (ip_has
 -- service-role key) can, and they only ever return approved reviews.
 alter table public.reviews enable row level security;
 revoke all on table public.reviews from anon, authenticated;
+
+-- The website's server functions use the service_role (secret) key.
+grant usage on schema public to service_role;
+grant select, insert, update, delete on table public.reviews to service_role;
+
+-- ============================================================
+-- Review photos (added later; safe to run on an existing table)
+-- ============================================================
+
+-- Up to 3 photo paths per review, e.g. {"<review-id>/1-a1b2c3.webp"}
+alter table public.reviews add column if not exists photos text[] not null default '{}';
+do $$ begin
+  alter table public.reviews add constraint reviews_photos_max3 check (cardinality(photos) <= 3);
+exception when duplicate_object then null; end $$;
+
+-- PRIVATE bucket: only JPG / PNG / WEBP, max 5 MB per file (enforced by Supabase Storage itself).
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('review-photos', 'review-photos', false, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
+on conflict (id) do update
+  set public = false,
+      file_size_limit = excluded.file_size_limit,
+      allowed_mime_types = excluded.allowed_mime_types;
+
+-- No storage policies are added on purpose: visitors (anon) can't list, read or
+-- upload anything in this bucket directly. The server (service_role, which
+-- bypasses RLS) hands out one-time signed upload URLs only after a valid review
+-- is saved, and signed view links only for approved reviews (and for the admin).

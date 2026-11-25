@@ -4,7 +4,7 @@
  *   Authorization: Bearer <ADMIN_PASSWORD>
  *
  * GET  /api/admin/reviews?status=pending|approved   → list reviews
- * POST /api/admin/reviews  { action: "approve" | "delete", id }
+ * POST /api/admin/reviews  { action: "approve" | "delete", id }   (delete also removes its photos)
  */
 var crypto = require('crypto');
 var http = require('../../lib/http.js');
@@ -41,8 +41,12 @@ module.exports = async function handler(req, res) {
   try {
     if (req.method === 'GET') {
       var status = new URL(req.url, 'http://x').searchParams.get('status') === 'approved' ? 'approved' : 'pending';
-      var rows = await db.rest('GET', 'reviews?select=' + FIELDS + '&status=eq.' + status + '&order=created_at.desc&limit=500');
-      return http.send(res, 200, { ok: true, status: status, reviews: rows || [] });
+      var q = 'reviews?select=' + FIELDS + ',photos&status=eq.' + status + '&order=created_at.desc&limit=500';
+      var rows;
+      try { rows = (await db.rest('GET', q)) || []; }
+      catch (e) { if (!db.missingPhotosColumn(e)) throw e; rows = (await db.rest('GET', q.replace(',photos&', '&'))) || []; }
+      rows = await db.withPhotoUrls(rows, 3600);
+      return http.send(res, 200, { ok: true, status: status, reviews: rows });
     }
     var b = await http.readJson(req);
     if (!b || !UUID.test(String(b.id || ''))) return http.send(res, 400, { ok: false, message: 'Invalid review id.' });
@@ -54,6 +58,12 @@ module.exports = async function handler(req, res) {
     if (b.action === 'delete') {
       var del = await db.rest('DELETE', 'reviews?id=eq.' + b.id, undefined, { Prefer: 'return=representation' });
       if (!del || !del.length) return http.send(res, 404, { ok: false, message: 'Review not found.' });
+      // Remove its photos too: the saved paths plus anything else left in its folder.
+      try {
+        var paths = (del[0].photos || []).slice();
+        (await db.listPhotos(b.id)).forEach(function (f) { if (paths.indexOf(f.path) === -1) paths.push(f.path); });
+        await db.removePhotos(paths);
+      } catch (e) { console.error('[admin/reviews] photo cleanup failed', e.message); }
       return http.send(res, 200, { ok: true });
     }
     return http.send(res, 400, { ok: false, message: 'Unknown action.' });
